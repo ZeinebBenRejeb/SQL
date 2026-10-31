@@ -209,5 +209,17 @@ Consider, for example, concepts of fariness, inequality, social structures, marg
 
 
 ```
-Your thoughts...
+Before learning SQL, I viewed databases as tools to structure, store, and retrieve information. I never imagined that such a useful technology could also reflect certain values and assumptions in the way it is designed. However, after reading When Databases Get to Define Family by Rida Qadri, I realized that databases are not necessarily neutral. I had never really thought about it this way before.
+
+What surprised me the most was learning that even seemingly simple decisions made during the design process can have serious consequences. For example, the way family relationships are defined in Pakistan's national identification system can significantly affect people's lives. If someone's family structure does not match the expectations of the system, they may face difficulties obtaining identification documents or accessing essential services. What bothers me is that a system designed to make people's lives easier can actually create more difficulties.
+
+This made me rethink two areas that are particularly close to me: education and immigration.
+
+In my role as an educator, I regularly work with databases containing students' grades, attendance, and academic performance. These databases are extremely useful, but I also realize that they do not always tell the whole story. Two students might receive the same grade while facing completely different circumstances. One might be experiencing personal difficulties or dealing with family responsibilities that are not reflected anywhere in the database. As a teacher, I know that treating students fairly does not always mean treating them exactly the same way. It also means recognizing their different circumstances.
+
+As an immigrant, I am also familiar with the challenges of navigating administrative systems in different countries. Moving from one country to another means adapting to different cultures, laws, regulations, and ways of organizing information. Someone might provide completely accurate information and still face difficulties because it does not fit the requirements or categories of another system. I believe this is something we do not always think about when designing databases. What seems obvious in one country or culture might be completely different in another. This made me realize how important it is for databases to be flexible and inclusive, especially when dealing with people's identities and personal histories.
+
+Finally, as an engineer and researcher, I have always valued accuracy, efficiency, and reliability in design. However, this article reminded me that these should not be the only aspects we consider. We should also think about the people who will use the system, their different backgrounds and circumstances, and how our design decisions might affect them.
+
+For me, the main message is that databases are not just about the information stored within them. Behind every row and every record, there is a person with their own story and circumstances. Technology should help people manage complexity, not force them to fit into predefined categories.
 ```
