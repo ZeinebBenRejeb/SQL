@@ -57,7 +57,16 @@ The store wants to keep customer addresses. Propose two architectures for the CU
 **HINT:** search type 1 vs type 2 slowly changing dimensions. 
 
 ```
-Your answer...
+
+Architecture 1 — SCD Type 1 (Overwrite)
+
+The proposed CUSTOMER_ADDRESS table, using this architecture, will have the following columns: customer_id, house/appartment_number, street, city, province, postal_code. Each customer has one address record. When the customer moves, the existing address is updated, and the previous address is not retained.
+
+
+Architecture 2 — SCD Type 2 (Retain history)
+
+The proposed CUSTOMER_ADDRESS table, using this architecture, will have the following columns: address_id, customer_id, house/appartment_number, street, city, province, postal_code, is_current. Each customer can have multiple addresses. In fact, when the customer moves, the existing address record is marked as historical by updating the is_current status. A new record is inserted for the new address, with a new address_id.
+
 ```
 
 ***
@@ -193,5 +202,15 @@ Consider, for example, concepts of labour, bias, LLM proliferation, moderating c
 
 
 ```
-Your thoughts...
+
+I have always viewed artificial intelligence and machine learning primarily as remarkable technological advancements capable of processing enormous amounts of information, identifying patterns, and performing tasks that would otherwise require considerable human effort. Of course, I was aware that these technologies rely on data collected and prepared by humans, but I had never really questioned the extent of human involvement in their development. What particularly surprised me while reading *Neural Nets Are Just People All the Way Down* by Vicki Boykis (2019) was the realization that behind systems often presented as intelligent, autonomous, and objective, there are countless individuals whose contributions remain largely invisible. Never would I have thought that technologies we tend to associate with automation and independence could rely so heavily on human labor, personal judgments, and even social prejudices. This article has certainly changed the way I perceive artificial intelligence and raised several important ethical questions regarding labor, fairness, accountability, and the relationship between technology and society.
+
+One of the aspects I found particularly concerning is the enormous amount of human labor required to develop machine learning systems, especially the manual classification and labeling of datasets. These tasks can be repetitive and time-consuming, yet they are essential for training algorithms. What troubles me is the contrast between the recognition given to technological innovations and the limited attention paid to the individuals who contribute to their development. We often celebrate the impressive capabilities of artificial intelligence without necessarily acknowledging the people who make these achievements possible. I cannot help but wonder whether these individuals receive fair compensation, appropriate working conditions, and recognition for their contributions. More importantly, who truly benefits from the success of these technologies? I believe that technological progress should not come at the expense of the people whose work makes it possible.
+
+Another ethical concern that particularly caught my attention is the assumption that algorithms and datasets are objective simply because they are based on mathematical models and computational processes. As a researcher, I find this especially interesting because, in scientific research, we constantly question the reliability of our experimental results, the quality of our data, and the assumptions underlying our methods. We know that even a sophisticated experimental technique cannot compensate for poorly collected data or inappropriate assumptions. Why should we approach artificial intelligence differently? If the datasets used to train algorithms contain biases, stereotypes, or incorrect classifications, these limitations may eventually influence the resulting systems. The examples discussed in the article made me realize that decisions taken during data collection and labeling can have consequences extending far beyond the original dataset. This becomes particularly concerning when such technologies are used in education, recruitment, healthcare, and other areas where decisions can directly affect people's opportunities and lives.
+
+I also believe that these ethical questions have become even more relevant today with the rapid development of large language models and generative artificial intelligence. These technologies are increasingly integrated into our daily activities, including research, education, and professional decision-making. I personally recognize their tremendous potential, particularly in making knowledge more accessible and supporting learning and scientific work. However, I also wonder whether their accessibility and apparent sophistication may encourage people to trust the information they generate without sufficiently questioning its reliability. As an educator, this is something I find particularly important. I want students to benefit from technological advancements, but I also want them to develop the ability to think critically, question information, and recognize its limitations. In addition, content moderation raises another ethical dilemma. While protecting users from harmful or misleading information is necessary, the decisions about what should be considered acceptable or inappropriate inevitably involve human values and judgments. Who establishes these boundaries? And how can we ensure that different cultural, social, and individual perspectives are fairly represented?
+
+Ultimately, this article has reinforced my understanding that technology cannot be separated from the society in which it is developed. Artificial intelligence is not simply a collection of algorithms functioning independently of humans; it reflects the decisions, priorities, assumptions, and limitations of the people and institutions behind it. What I take away from this reading is that technological progress should not be evaluated solely in terms of efficiency, accuracy, or computational performance, but also through its impact on individuals and communities. As a researcher, I believe we have a responsibility to question not only what a technology can achieve, but also how it is developed and what consequences it may have. As an educator, I believe we have an equally important responsibility to encourage this critical awareness in future generations. After all, what is the value of technological advancement if we overlook the people who make it possible or those who may be negatively affected by it?
+
 ```

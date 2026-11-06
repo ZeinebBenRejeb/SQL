@@ -23,7 +23,11 @@ Edit the appropriate columns -- you're making two edits -- and the NULL rows wil
 All the other rows will remain the same. */
 --QUERY 1
 
-
+SELECT
+	product_name || ', ' ||
+	COALESCE(product_size, '') ||
+    ' (' || COALESCE(product_qty_type, 'unit') || ')'
+FROM product;
 
 
 --END QUERY
@@ -41,7 +45,13 @@ HINT: One of these approaches uses ROW_NUMBER() and one uses DENSE_RANK().
 Filter the visits to dates before April 29, 2022. */
 --QUERY 2
 
-
+SELECT
+    customer_id,
+    market_date,
+    DENSE_RANK() OVER (PARTITION BY customer_id
+						ORDER BY market_date) AS visit_number
+FROM customer_purchases
+WHERE market_date < '2022-04-29';
 
 
 --END QUERY
@@ -53,7 +63,16 @@ only the customer’s most recent visit.
 HINT: Do not use the previous visit dates filter. */
 --QUERY 3
 
-
+SELECT *
+FROM (
+    SELECT
+        customer_id,
+        market_date,
+        DENSE_RANK() OVER (PARTITION BY customer_id
+							ORDER BY market_date DESC ) AS visit_number
+    FROM customer_purchases
+) AS ranked_visits
+WHERE visit_number = 1;
 
 
 --END QUERY
@@ -66,7 +85,10 @@ You can make this a running count by including an ORDER BY within the PARTITION 
 Filter the visits to dates before April 29, 2022. */
 --QUERY 4
 
-
+SELECT *,
+    COUNT(*) OVER (PARTITION BY customer_id, product_id ) AS purchase_count
+FROM customer_purchases
+WHERE market_date < '2022-04-29';
 
 
 --END QUERY
@@ -85,7 +107,12 @@ Remove any trailing or leading whitespaces. Don't just use a case statement for 
 Hint: you might need to use INSTR(product_name,'-') to find the hyphens. INSTR will help split the column. */
 --QUERY 5
 
-
+SELECT
+    product_name,
+    TRIM(
+        SUBSTR(product_name,NULLIF(INSTR(product_name, '-'), 0) + 1 )
+    ) AS description
+FROM product;
 
 
 --END QUERY
@@ -94,8 +121,9 @@ Hint: you might need to use INSTR(product_name,'-') to find the hyphens. INSTR w
 /* 2. Filter the query to show any product_size value that contain a number with REGEXP. */
 --QUERY 6
 
-
-
+SELECT product_size
+FROM product
+WHERE product_size REGEXP '[0-9]';
 
 --END QUERY
 
@@ -111,7 +139,36 @@ HINT: There are a possibly a few ways to do this query, but if you're struggling
 with a UNION binding them. */
 --QUERY 7
 
+WITH daily_sales AS (
+    SELECT
+        market_date,
+        SUM(quantity * cost_per_quantity) AS total_sales
+    FROM customer_purchases
+    GROUP BY market_date),
+	
+ranked_sales AS (
+    SELECT
+        market_date,
+        total_sales,
+        RANK() OVER ( ORDER BY total_sales DESC ) AS best_rank,
+        RANK() OVER ( ORDER BY total_sales ASC ) AS worst_rank
+    FROM daily_sales
+)
+SELECT
+    market_date,
+    total_sales,
+    'Best Day' AS category
+FROM ranked_sales
+WHERE best_rank = 1
 
+UNION
+
+SELECT
+    market_date,
+    total_sales,
+    'Worst Day' AS category
+FROM ranked_sales
+WHERE worst_rank = 1;
 
 
 --END QUERY
@@ -132,11 +189,31 @@ How many customers are there (y).
 Before your final group by you should have the product of those two queries (x*y).  */
 --QUERY 8
 
-
-
+WITH unique_inventory AS (
+    SELECT DISTINCT
+        vendor_id,
+        product_id,
+        original_price
+    FROM vendor_inventory
+)
+SELECT
+    vendor.vendor_name,
+    product.product_name,
+    SUM(5 * unique_inventory.original_price) AS total_revenue
+FROM unique_inventory
+CROSS JOIN customer
+JOIN vendor
+    ON unique_inventory.vendor_id = vendor.vendor_id
+JOIN product
+    ON unique_inventory.product_id = product.product_id
+GROUP BY
+    vendor.vendor_id,
+    product.product_id
+ORDER BY
+    vendor.vendor_name,
+    product.product_name;
 
 --END QUERY
-
 
 -- INSERT
 /*1.  Create a new table "product_units". 
@@ -145,7 +222,11 @@ It should use all of the columns from the product table, as well as a new column
 Name the timestamp column `snapshot_timestamp`. */
 --QUERY 9
 
-
+CREATE TABLE product_units AS
+SELECT *,
+    CURRENT_TIMESTAMP AS snapshot_timestamp
+FROM product
+WHERE product_qty_type = 'unit';
 
 
 --END QUERY
@@ -155,11 +236,26 @@ Name the timestamp column `snapshot_timestamp`. */
 This can be any product you desire (e.g. add another record for Apple Pie). */
 --QUERY 10
 
-
+INSERT INTO product_units (
+    product_id,
+    product_name,
+    product_size,
+    product_category_id,
+    product_qty_type,
+    snapshot_timestamp
+)
+SELECT
+    product_id,
+    product_name,
+    product_size,
+    product_category_id,
+    product_qty_type,
+    CURRENT_TIMESTAMP
+FROM product
+WHERE product_name = 'Apple Pie';
 
 
 --END QUERY
-
 
 -- DELETE
 /* 1. Delete the older record for whatever product you added. 
@@ -167,11 +263,14 @@ This can be any product you desire (e.g. add another record for Apple Pie). */
 HINT: If you don't specify a WHERE clause, you are going to have a bad time.*/
 --QUERY 11
 
-
-
+DELETE FROM product_units
+WHERE product_name = 'Apple Pie'
+  AND snapshot_timestamp < (
+      SELECT MAX(snapshot_timestamp)
+      FROM product_units
+      WHERE product_name = 'Apple Pie' );
 
 --END QUERY
-
 
 -- UPDATE
 /* 1.We want to add the current_quantity to the product_units table. 
@@ -191,10 +290,15 @@ Finally, make sure you have a WHERE statement to update the right row,
 When you have all of these components, you can run the update statement. */
 --QUERY 12
 
+ALTER TABLE product_units
+ADD current_quantity INT;
 
-
+UPDATE product_units
+SET current_quantity = COALESCE(
+		( SELECT vendor_inventory.quantity
+        FROM vendor_inventory
+        WHERE vendor_inventory.product_id = product_units.product_id
+        ORDER BY vendor_inventory.market_date DESC
+        LIMIT 1 ), 0);
 
 --END QUERY
-
-
-
